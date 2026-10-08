@@ -1,0 +1,80 @@
+x-kafka-common: &kafka-common
+  image: apache/kafka:4.3.1
+  restart: unless-stopped
+
+x-kafka-env: &kafka-env
+  CLUSTER_ID: "4L6g3nShT-eMCtK--X86sw"
+  KAFKA_PROCESS_ROLES: "broker,controller"
+  KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka-1:9093,2@kafka-2:9093,3@kafka-3:9093"
+  KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+  KAFKA_INTER_BROKER_LISTENER_NAME: "INTERNAL"
+  KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT"
+  KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+  KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+  KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+  KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+  KAFKA_MIN_INSYNC_REPLICAS: 2
+  KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+  KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+
+services:
+  kafka-1:
+    <<: *kafka-common
+    container_name: kafka-1
+    ports: ["49092:49092"]
+    environment:
+      <<: *kafka-env
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENERS: "INTERNAL://:9092,CONTROLLER://:9093,EXTERNAL://:49092"
+      KAFKA_ADVERTISED_LISTENERS: "INTERNAL://kafka-1:9092,EXTERNAL://localhost:49092"
+      # Задаем кастомную директорию для логов и данных
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+    volumes:
+      # Монтируем именованный volume в директорию, указанную в KAFKA_LOG_DIRS
+      - kafka-1-data:/var/lib/kafka/data
+
+  kafka-2:
+    <<: *kafka-common
+    container_name: kafka-2
+    ports: ["29092:29092"]
+    environment:
+      <<: *kafka-env
+      KAFKA_NODE_ID: 2
+      KAFKA_LISTENERS: "INTERNAL://:9092,CONTROLLER://:9093,EXTERNAL://:29092"
+      KAFKA_ADVERTISED_LISTENERS: "INTERNAL://kafka-2:9092,EXTERNAL://localhost:29092"
+      # Задаем кастомную директорию для логов и данных
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+    volumes:
+      # Монтируем именованный volume в директорию, указанную в KAFKA_LOG_DIRS
+      - kafka-2-data:/var/lib/kafka/data
+
+  kafka-3:
+    <<: *kafka-common
+    container_name: kafka-3
+    ports: ["39092:39092"]
+    environment:
+      <<: *kafka-env
+      KAFKA_NODE_ID: 3
+      KAFKA_LISTENERS: "INTERNAL://:9092,CONTROLLER://:9093,EXTERNAL://:39092"
+      KAFKA_ADVERTISED_LISTENERS: "INTERNAL://kafka-3:9092,EXTERNAL://localhost:39092"
+      # Задаем кастомную директорию для логов и данных
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+    volumes:
+      # Монтируем именованный volume в директорию, указанную в KAFKA_LOG_DIRS
+      - kafka-3-data:/var/lib/kafka/data
+
+  kafka-ui:
+    image: ghcr.io/kafbat/kafka-ui:latest
+    container_name: kafka-ui
+    ports: ["18080:8080"]
+    environment:
+      KAFKA_CLUSTERS_0_NAME: "course"
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka-1:9092,kafka-2:9092,kafka-3:9092"
+    depends_on: [kafka-1, kafka-2, kafka-3]
+
+
+volumes:
+  # Объявляем именованный volume для хранения данных
+  kafka-1-data:
+  kafka-2-data:
+  kafka-3-data:
