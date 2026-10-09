@@ -9,7 +9,7 @@ Kafka UI will be here: http://localhost:18080/ui/clusters/course/all-topics?fts=
 
 ### In PowerShell call POST request to add order:
 ```
-Invoke-RestMethod -Uri "http://localhost:8080/api/order" -Method Post -Body '{"email":"my@mail.com", "productName":"Iphone 18 Pro Max Burgundi", "quantity":4}' -ContentType "application/json"
+Invoke-RestMethod -Uri "http://localhost:8080/api/order" -Method Post -Body '{"email":"my@mail.com", "productName":"Iphone 18 Pro Max Burgundy", "quantity":4}' -ContentType "application/json"
 ```
 
 In Inventory repository we have next Items:

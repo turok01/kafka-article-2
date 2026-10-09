@@ -72,6 +72,24 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka-1:9092,kafka-2:9092,kafka-3:9092"
     depends_on: [kafka-1, kafka-2, kafka-3]
 
+  postgres-inventory:
+    # Будем использовать PostgreSQL
+    image: postgres:17
+    # Имя контейнера
+    container_name: postgres-inventory
+    # hostname контейнера
+    hostname: postgres-inventory
+    # Пробрасываем порты
+    ports:
+      - "5432:5432"
+    environment:
+      # Юзер
+      POSTGRES_USER: postgres
+      # Пароль
+      POSTGRES_PASSWORD: postgres
+      # Стартовая база данных
+      POSTGRES_DB: inventory_db
+
 
 volumes:
   # Объявляем именованный volume для хранения данных

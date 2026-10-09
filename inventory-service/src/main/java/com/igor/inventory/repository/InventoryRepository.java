@@ -1,34 +1,16 @@
 package com.igor.inventory.repository;
 
 
-import com.igor.kafka_dto_contracts.order.event.OrderPlacedEvent;
-import jakarta.annotation.PostConstruct;
+import com.igor.inventory.model.Inventory;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 @Repository
-public class InventoryRepository {
-    private final Map<String, Integer> inventory = new ConcurrentHashMap<>();
-
-    @PostConstruct
-    public void init() {
-        inventory.put("Iphone 18 Pro", 5);
-        inventory.put("Iphone 18 Pro Max Burgundy", 10);
-        inventory.put("Mac Pro", 6);
-    }
-
-    public void deductStock(OrderPlacedEvent orderPlacedEvent) {
-        Integer result = inventory.computeIfPresent(orderPlacedEvent.productName(),
-                (name, quantity) -> {
-            if (quantity < orderPlacedEvent.quantity()) {
-                throw new RuntimeException("Quantity exceeded");
-            }
-            return quantity - orderPlacedEvent.quantity();
-                });
-        if (result == null) {
-            throw new RuntimeException("Stock exceeded");
-        }
-    }
+public interface InventoryRepository extends JpaRepository<Inventory, Long> {
+    @Modifying
+    @Query("UPDATE Inventory i SET i.quantity = i.quantity - :quantity WHERE i.productName = :productName AND i.quantity >= :quantity")
+    int deductStock(@Param("productName") String productName, @Param("quantity") Integer quantity);
 }
