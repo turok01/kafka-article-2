@@ -18,3 +18,9 @@ inventory.put("Iphone 18 Pro", 5);
 inventory.put("Iphone 18 Pro Max Burgundy", 10);
 inventory.put("Mac Pro", 6);
 ```
+
+Commit 1 - learn.  
+Commit 2 - Use PostgreSQL and idempotent producers
+Commit 3 - idempotent consumer (inventory-service) - create table with saving ID - primary key (UNIQUE),
+orderId for example. - Это защитит от дупликации обработки входящих сообщений (пришел заказ), чтобы защититься 
+от падения сервиса и НЕ передачи в Кафку используем Outbox-Pattern (Event-Driven Architecture).
