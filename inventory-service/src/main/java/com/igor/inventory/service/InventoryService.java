@@ -21,43 +21,14 @@ import tools.jackson.databind.ObjectMapper;
 public class InventoryService {
     private static Logger logger = LoggerFactory.getLogger(InventoryService.class);
 
-    private final InventoryRepository inventoryRepository;
-    private final ProcessedOrderIdRepository processedOrderIdRepository;
-    private final OutboxEventRepository outboxEventRepository;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final InventoryProcessor inventoryProcessor;
 
-    public InventoryService(InventoryRepository inventoryRepository, ProcessedOrderIdRepository processedOrderIdRepository,
-                            OutboxEventRepository outboxEventRepository) {
-        this.inventoryRepository = inventoryRepository;
-        this.processedOrderIdRepository = processedOrderIdRepository;
-        this.outboxEventRepository = outboxEventRepository;
+    public InventoryService(InventoryProcessor inventoryProcessor) {
+        this.inventoryProcessor = inventoryProcessor;
     }
 
-    @Transactional
     @KafkaListener(topics = "order-placed")
     public void reserveInventory(OrderPlacedEvent orderPlacedEvent) {
-        try {
-            processedOrderIdRepository.save(new ProcessedOrderId(
-                    orderPlacedEvent.orderId()
-            ));
-        } catch (DataIntegrityViolationException e) {
-            logger.info("Order {} already processed", orderPlacedEvent.orderId());
-            return;
-        }
-
-        int count = inventoryRepository.deductStock(orderPlacedEvent.productName(), orderPlacedEvent.quantity());
-        String topic = (count > 0) ? "inventory-reserved" : "inventory-rejected";
-        Object event = (count > 0)
-                ? new InventoryReservedEvent(orderPlacedEvent.orderId(), orderPlacedEvent.email())
-                : new InventoryRejectedEvent(orderPlacedEvent.orderId(), orderPlacedEvent.email());
-        String jsonPayload;
-        try {
-            jsonPayload = objectMapper.writeValueAsString(event);
-        } catch (Exception e) {
-            throw new RuntimeException("Serialization failed for order: " + orderPlacedEvent.orderId(), e);
-        }
-
-        OutboxEvent outboxEvent = new OutboxEvent(orderPlacedEvent.orderId(), topic, jsonPayload);
-        outboxEventRepository.save(outboxEvent);
+        inventoryProcessor.processOrder(orderPlacedEvent);
     }
 }
