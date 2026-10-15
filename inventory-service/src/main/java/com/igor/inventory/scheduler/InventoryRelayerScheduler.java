@@ -9,10 +9,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
+@Component
 public class InventoryRelayerScheduler {
     private final Logger logger = LoggerFactory.getLogger(InventoryRelayerScheduler.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -40,6 +42,7 @@ public class InventoryRelayerScheduler {
                 kafkaTemplate.send(outboxEvent.getTopic(), outboxEvent.getKey(), payload).get(); // wait answer of asynchronous CompletableFuture
                 outboxEvent.setSent(true);
                 outboxEventRepository.save(outboxEvent);
+                logger.info("Event sent to topic: " + outboxEvent.getTopic());
             }
             catch (Exception e) {
                 logger.error("Failed to relay outbox event: {}", outboxEvent.getKey(), e);

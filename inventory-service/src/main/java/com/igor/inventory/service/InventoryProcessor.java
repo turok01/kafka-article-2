@@ -11,9 +11,11 @@ import com.igor.kafka_dto_contracts.order.event.OrderPlacedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
+@Service
 public class InventoryProcessor {
     private final static Logger logger = LoggerFactory.getLogger(InventoryProcessor.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
