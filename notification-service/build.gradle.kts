@@ -3,13 +3,13 @@
  */
 
 plugins {
-    id("buildlogic.java-conventions")
+    id("java-conventions")
 }
 
 dependencies {
-    api(libs.org.springframework.boot.spring.boot.starter.kafka)
-    api(libs.org.springframework.boot.spring.boot.starter.webmvc)
-    api(project(":kafka-dto-contracts"))
+    implementation(libs.org.springframework.boot.spring.boot.starter.kafka)
+    implementation(libs.org.springframework.boot.spring.boot.starter.webmvc)
+    implementation(project(":kafka-dto-contracts"))
     testImplementation(libs.org.springframework.boot.spring.boot.starter.kafka.test)
     testImplementation(libs.org.springframework.boot.spring.boot.starter.webmvc.test)
 }

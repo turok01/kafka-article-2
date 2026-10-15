@@ -3,19 +3,20 @@
  */
 
 plugins {
-    id("buildlogic.java-conventions")
+    id("java-conventions")
 }
 
 dependencies {
-    api(libs.org.springframework.boot.spring.boot.starter.kafka)
-    api(libs.org.springframework.boot.spring.boot.starter.webmvc)
-    api(libs.org.springframework.boot.spring.boot.starter.data.jpa)
-    api(libs.ch.qos.logback.logback.classic)
-    api(project(":kafka-dto-contracts"))
+    implementation(libs.org.springframework.boot.spring.boot.starter.kafka)
+    implementation(libs.org.springframework.boot.spring.boot.starter.webmvc)
+    implementation(libs.org.springframework.boot.spring.boot.starter.data.jpa)
+    implementation(libs.ch.qos.logback.logback.classic)
+    implementation(project(":kafka-dto-contracts"))
     runtimeOnly(libs.org.postgresql.postgresql)
     testImplementation(libs.org.springframework.boot.spring.boot.starter.kafka.test)
     testImplementation(libs.org.springframework.boot.spring.boot.starter.webmvc.test)
     compileOnly(libs.org.projectlombok.lombok)
+    annotationProcessor(libs.org.projectlombok.lombok)
 }
 
 description = "inventory-service"
