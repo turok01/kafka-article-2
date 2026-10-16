@@ -1,3 +1,7 @@
+rootProject.name = "build-logic"
+
+include("conventions")
+
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {

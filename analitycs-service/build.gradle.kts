@@ -3,7 +3,7 @@
  */
 
 plugins {
-    id("java-conventions")
+    id("spring-boot-conventions")
 }
 
 dependencies {

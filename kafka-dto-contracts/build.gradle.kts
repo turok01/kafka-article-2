@@ -3,7 +3,7 @@
  */
 
 plugins {
-    id("java-library")
+    id("java-conventions")
 }
 
 description = "kafka-dto-contracts"
